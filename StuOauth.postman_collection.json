@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "4a7ebdaf-f562-4c3a-a37f-573ad5ae28f0",
+		"name": "StuOauth",
+		"description": "汕大课程表Oauth认证接口测试",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get_oauth_data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6e52a98a-4ec2-4f2e-85ab-0463efd71007",
+						"exec": [
+							"let OauthData = pm.response.json();",
+							"let syllabusCookie = pm.environment.get(\"syllabusCookie\");",
+							"let Setcookie = postman.getResponseHeader(\"set-cookie\");",
+							"try{",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    }); ",
+							"    pm.test(\"code is 0\" ,function(){",
+							"        pm.expect(OauthData.code).to.eql('0');",
+							"    });",
+							"    if(Setcookie){",
+							"        pm.test(\"syllabuscookie is exist\", function () {",
+							"            pm.response.to.have.header(\"set-cookie\");",
+							"        });",
+							"        pm.environment.set(\"syllabusCookie\", postman.getResponseHeader(\"set-cookie\"));",
+							"    }else{",
+							"        console.log(\"set-cookie is not exist\");",
+							"        if(!syllabusCookie){",
+							"            pm.test(\"syllabusCookie doesn't have value\", function () {",
+							"                pm.expect(syllabusCookie).to.be.true;",
+							"            });",
+							"        }",
+							"    }",
+							"}catch(e){",
+							"    pm.environment.set(\"err\",e.message);",
+							"}",
+							"pm.environment.set(\"state\", OauthData.state);",
+							"pm.environment.set(\"client_id\", OauthData.client_id);",
+							"pm.environment.set(\"scope\", OauthData.scope);",
+							"pm.environment.set(\"redirect_uri\", OauthData.redirect_uri);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "00be7d85-0cda-497e-bcd5-33a54c4d8500",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{syllabusHost}}/user/get_oauth_data?from=mini",
+					"host": [
+						"{{syllabusHost}}"
+					],
+					"path": [
+						"user",
+						"get_oauth_data"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "mini"
+						}
+					]
+				},
+				"description": "获取Oauth相关数据"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5ea761fd-932b-4a17-a742-ccc00a65b4d5",
+						"exec": [
+							"let oauthCookie = pm.environment.get(\"oauthCookie\");",
+							"let Setcookie = postman.getResponseHeader(\"set-cookie\");",
+							"try{",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"    pm.test(\"code is 0\" ,function(){",
+							"        pm.expect(pm.response.json().code).to.eql('0');",
+							"    });",
+							"    if(Setcookie){",
+							"        pm.test(\"oauthCookie is exist\", function () {",
+							"            pm.response.to.have.header(\"set-cookie\");",
+							"        });",
+							"        pm.environment.set(\"oauthCookie\", postman.getResponseHeader(\"set-cookie\"));",
+							"    }else{",
+							"        console.log(\"set-cookie is not exist\");",
+							"        if(!oauthCookie){",
+							"            pm.test(\"oauthCookie doesn't have value\", function () {",
+							"                pm.expect(oauthCookie).to.be.true;",
+							"            });",
+							"        }",
+							"    }",
+							"}catch(e){",
+							"    pm.environment.set(\"err\",e.message);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "account",
+							"value": "17jyzhong2",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "ASDqwe123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{oauthHost}}/oauth/login",
+					"host": [
+						"{{oauthHost}}"
+					],
+					"path": [
+						"oauth",
+						"login"
+					]
+				},
+				"description": "登陆接口"
+			},
+			"response": []
+		},
+		{
+			"name": "authorize",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c68d9981-2fbe-46dc-bb05-89eb738c498d",
+						"exec": [
+							"let json = pm.response.json();",
+							"try{",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"    pm.test(\"code is 0\" ,function(){",
+							"        pm.expect(pm.response.json().code).to.eql('0');",
+							"    });",
+							"    pm.test(\"authorization_code is exist\", function () {",
+							"        pm.expect(pm.response.text()).to.include(\"authorization_code\");",
+							"    });",
+							"}catch(e){",
+							"    pm.environment.set(\"err\",e.message);",
+							"}",
+							"pm.environment.set(\"authorization_code\", json.authorization_code);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "{{oauthCookie}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{oauthHost}}/oauth/authorize?response_type=code&client_id={{client_id}}&state={{state}}&scope={{scope}}&from=mini",
+					"host": [
+						"{{oauthHost}}"
+					],
+					"path": [
+						"oauth",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}"
+						},
+						{
+							"key": "state",
+							"value": "{{state}}"
+						},
+						{
+							"key": "scope",
+							"value": "{{scope}}"
+						},
+						{
+							"key": "from",
+							"value": "mini"
+						}
+					]
+				},
+				"description": "授权"
+			},
+			"response": []
+		},
+		{
+			"name": "get_skey",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "291b89c6-8426-45d2-896f-4fa0f5499f39",
+						"exec": [
+							"let json = pm.response.json();",
+							"try{",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"    pm.test(\"code is 0\" ,function(){",
+							"        pm.expect(pm.response.json().code).to.eql('0');",
+							"    });",
+							"    pm.test(\"skey is exist\", function () {",
+							"        pm.expect(pm.response.text()).to.include(\"skey\");",
+							"    });",
+							"}catch(e){",
+							"    pm.environment.set(\"err\",e.message);",
+							"}",
+							"pm.environment.set(\"skey\", json.skey);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "{{syllabusCookie}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{redirect_uri}}?code={{authorization_code}}&state={{state}}&from=mini",
+					"host": [
+						"{{redirect_uri}}"
+					],
+					"query": [
+						{
+							"key": "code",
+							"value": "{{authorization_code}}"
+						},
+						{
+							"key": "state",
+							"value": "{{state}}"
+						},
+						{
+							"key": "from",
+							"value": "mini"
+						}
+					]
+				},
+				"description": "获取skey\n"
+			},
+			"response": []
+		}
+	]
+}
